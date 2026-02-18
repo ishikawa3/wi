@@ -1,0 +1,338 @@
+# Walkability Index プロファイル設定
+# 論文「Walkability と不動産価値」(2020) に基づく
+
+# 基準エリア: 東京23区平均
+base_area:
+  name: "東京23区平均"
+  grid_count: 150000
+  average_amenity_counts:
+    supermarket: 3.5
+    convenience: 5.2
+    pharmacy: 2.8
+    hospital: 1.2
+    school: 2.0
+    park: 4.5
+    restaurant: 15.0
+    cafe: 8.0
+
+# プロファイル定義
+profiles:
+  # ====== 住宅系 ======
+
+  residential_general:
+    name: "一般居住者向け"
+    description: "バランスの取れた生活利便性を重視"
+    target_users: ["単身世帯", "DINKS", "一般", "ファミリー"]
+
+    amenities:
+      supermarket:
+        weight: 0.20
+        ideal_distance: 400
+        max_distance: 1000
+        decay_type: "exponential"
+        description: "スーパーマーケット"
+
+      convenience:
+        weight: 0.15
+        ideal_distance: 200
+        max_distance: 500
+        decay_type: "exponential"
+        description: "コンビニエンスストア"
+
+      pharmacy:
+        weight: 0.15
+        ideal_distance: 500
+        max_distance: 1000
+        decay_type: "exponential"
+        description: "薬局"
+
+      cafe:
+        weight: 0.10
+        ideal_distance: 300
+        max_distance: 800
+        decay_type: "exponential"
+        description: "カフェ"
+
+      restaurant:
+        weight: 0.10
+        ideal_distance: 400
+        max_distance: 1000
+        decay_type: "exponential"
+        description: "飲食店"
+
+      park:
+        weight: 0.10
+        ideal_distance: 500
+        max_distance: 1200
+        decay_type: "exponential"
+        description: "公園"
+
+      bank:
+        weight: 0.08
+        ideal_distance: 600
+        max_distance: 1500
+        decay_type: "exponential"
+        description: "銀行・ATM"
+
+      post_office:
+        weight: 0.07
+        ideal_distance: 600
+        max_distance: 1500
+        decay_type: "exponential"
+        description: "郵便局"
+
+      library:
+        weight: 0.05
+        ideal_distance: 800
+        max_distance: 2000
+        decay_type: "exponential"
+        description: "図書館"
+
+  residential_family:
+    name: "ファミリー世帯向け"
+    description: "子育て環境を重視"
+    target_users: ["子育て世帯", "ファミリー"]
+
+    amenities:
+      supermarket:
+        weight: 0.20
+        ideal_distance: 400
+        max_distance: 1000
+        decay_type: "exponential"
+        description: "スーパーマーケット"
+
+      kindergarten:
+        weight: 0.25
+        ideal_distance: 500
+        max_distance: 1000
+        decay_type: "exponential"
+        description: "保育園・幼稚園"
+
+      school:
+        weight: 0.15
+        ideal_distance: 600
+        max_distance: 1500
+        decay_type: "exponential"
+        description: "小学校"
+
+      park:
+        weight: 0.20
+        ideal_distance: 300
+        max_distance: 1000
+        decay_type: "exponential"
+        description: "公園・遊び場"
+
+      playground:
+        weight: 0.05
+        ideal_distance: 300
+        max_distance: 800
+        decay_type: "exponential"
+        description: "児童遊園"
+
+      clinic:
+        weight: 0.10
+        ideal_distance: 500
+        max_distance: 1200
+        decay_type: "exponential"
+        description: "小児科・診療所"
+
+      library:
+        weight: 0.05
+        ideal_distance: 800
+        max_distance: 2000
+        decay_type: "exponential"
+        description: "図書館"
+
+  residential_single:
+    name: "単身世帯向け"
+    description: "利便性と娯楽を重視"
+    target_users: ["単身世帯", "学生", "若年層"]
+
+    amenities:
+      convenience:
+        weight: 0.25
+        ideal_distance: 150
+        max_distance: 400
+        decay_type: "exponential"
+        description: "コンビニエンスストア"
+
+      restaurant:
+        weight: 0.20
+        ideal_distance: 300
+        max_distance: 800
+        decay_type: "exponential"
+        description: "飲食店"
+
+      cafe:
+        weight: 0.15
+        ideal_distance: 250
+        max_distance: 600
+        decay_type: "exponential"
+        description: "カフェ"
+
+      supermarket:
+        weight: 0.15
+        ideal_distance: 400
+        max_distance: 1000
+        decay_type: "exponential"
+        description: "スーパーマーケット"
+
+      atm:
+        weight: 0.10
+        ideal_distance: 300
+        max_distance: 800
+        decay_type: "exponential"
+        description: "ATM"
+
+      fast_food:
+        weight: 0.08
+        ideal_distance: 300
+        max_distance: 800
+        decay_type: "exponential"
+        description: "ファストフード"
+
+      bar:
+        weight: 0.07
+        ideal_distance: 400
+        max_distance: 1000
+        decay_type: "exponential"
+        description: "バー・居酒屋"
+
+  residential_elderly:
+    name: "高齢者向け"
+    description: "医療・福祉と日常利便性を重視"
+    target_users: ["高齢者", "シニア層"]
+
+    amenities:
+      hospital:
+        weight: 0.25
+        ideal_distance: 600
+        max_distance: 1500
+        decay_type: "exponential"
+        description: "病院"
+
+      clinic:
+        weight: 0.15
+        ideal_distance: 400
+        max_distance: 1000
+        decay_type: "exponential"
+        description: "診療所"
+
+      pharmacy:
+        weight: 0.20
+        ideal_distance: 400
+        max_distance: 800
+        decay_type: "exponential"
+        description: "薬局"
+
+      supermarket:
+        weight: 0.20
+        ideal_distance: 300
+        max_distance: 600
+        decay_type: "exponential"
+        description: "スーパーマーケット"
+
+      bank:
+        weight: 0.10
+        ideal_distance: 500
+        max_distance: 1200
+        decay_type: "exponential"
+        description: "銀行"
+
+      post_office:
+        weight: 0.05
+        ideal_distance: 500
+        max_distance: 1200
+        decay_type: "exponential"
+        description: "郵便局"
+
+      park:
+        weight: 0.05
+        ideal_distance: 400
+        max_distance: 1000
+        decay_type: "exponential"
+        description: "公園"
+
+  # ====== オフィス系 ======
+
+  office:
+    name: "オフィスワーカー向け"
+    description: "ランチ・休憩の利便性を重視"
+    target_users: ["オフィスワーカー", "ビジネスパーソン"]
+
+    amenities:
+      restaurant:
+        weight: 0.25
+        ideal_distance: 300
+        max_distance: 800
+        decay_type: "exponential"
+        description: "飲食店"
+
+      cafe:
+        weight: 0.20
+        ideal_distance: 200
+        max_distance: 600
+        decay_type: "exponential"
+        description: "カフェ"
+
+      convenience:
+        weight: 0.15
+        ideal_distance: 150
+        max_distance: 400
+        decay_type: "exponential"
+        description: "コンビニエンスストア"
+
+      fast_food:
+        weight: 0.12
+        ideal_distance: 250
+        max_distance: 600
+        decay_type: "exponential"
+        description: "ファストフード"
+
+      bank:
+        weight: 0.10
+        ideal_distance: 400
+        max_distance: 1000
+        decay_type: "exponential"
+        description: "銀行・ATM"
+
+      post_office:
+        weight: 0.08
+        ideal_distance: 500
+        max_distance: 1200
+        decay_type: "exponential"
+        description: "郵便局"
+
+      bar:
+        weight: 0.10
+        ideal_distance: 400
+        max_distance: 1000
+        decay_type: "exponential"
+        description: "バー・居酒屋"
+
+# 距離減衰関数のパラメータ
+decay_functions:
+  exponential:
+    # score = exp(k * (distance - ideal_distance))
+    # where k = log(0.1) / (max_distance - ideal_distance)
+    min_score: 0.1 # max_distance での最小スコア
+
+  gaussian:
+    # score = exp(-((distance - ideal_distance) / sigma)^2)
+    sigma_factor: 0.3 # sigma = (max_distance - ideal_distance) * factor
+
+# 同一アメニティの効用逓減パラメータ
+diminishing_returns:
+  enabled: true
+  # n番目のアメニティの効用 = base_utility / (n ^ exponent)
+  exponent: 0.5 # 平方根による逓減
+
+# グリッド設定
+grid:
+  cell_size: 50 # メートル
+  crs: "EPSG:6677" # JGD2011 / Japan Plane Rectangular CS IX (東京用)
+
+# 徒歩速度設定
+walking_speed:
+  general: 80 # m/min (一般)
+  elderly: 60 # m/min (高齢者)

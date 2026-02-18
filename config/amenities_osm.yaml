@@ -1,0 +1,181 @@
+# OpenStreetMapタグからWIアメニティカテゴリへのマッピング
+
+# スーパーマーケット
+supermarket:
+  osm_tags:
+    - key: "shop"
+      value: "supermarket"
+    - key: "amenity"
+      value: "marketplace"
+
+# コンビニエンスストア
+convenience:
+  osm_tags:
+    - key: "shop"
+      value: "convenience"
+
+# 薬局
+pharmacy:
+  osm_tags:
+    - key: "amenity"
+      value: "pharmacy"
+
+# 病院
+hospital:
+  osm_tags:
+    - key: "amenity"
+      value: "hospital"
+
+# 診療所・クリニック
+clinic:
+  osm_tags:
+    - key: "amenity"
+      value: "clinic"
+    - key: "amenity"
+      value: "doctors"
+
+# 歯科医院
+dentist:
+  osm_tags:
+    - key: "amenity"
+      value: "dentist"
+
+# 保育園・幼稚園
+kindergarten:
+  osm_tags:
+    - key: "amenity"
+      value: "kindergarten"
+    - key: "amenity"
+      value: "childcare"
+
+# 学校
+school:
+  osm_tags:
+    - key: "amenity"
+      value: "school"
+
+# 大学
+university:
+  osm_tags:
+    - key: "amenity"
+      value: "university"
+    - key: "amenity"
+      value: "college"
+
+# 図書館
+library:
+  osm_tags:
+    - key: "amenity"
+      value: "library"
+
+# 公園
+park:
+  osm_tags:
+    - key: "leisure"
+      value: "park"
+
+# 遊び場
+playground:
+  osm_tags:
+    - key: "leisure"
+      value: "playground"
+
+# レストラン
+restaurant:
+  osm_tags:
+    - key: "amenity"
+      value: "restaurant"
+
+# カフェ
+cafe:
+  osm_tags:
+    - key: "amenity"
+      value: "cafe"
+
+# ファストフード
+fast_food:
+  osm_tags:
+    - key: "amenity"
+      value: "fast_food"
+
+# バー・居酒屋
+bar:
+  osm_tags:
+    - key: "amenity"
+      value: "bar"
+    - key: "amenity"
+      value: "pub"
+
+# 銀行
+bank:
+  osm_tags:
+    - key: "amenity"
+      value: "bank"
+
+# ATM
+atm:
+  osm_tags:
+    - key: "amenity"
+      value: "atm"
+
+# 郵便局
+post_office:
+  osm_tags:
+    - key: "amenity"
+      value: "post_office"
+
+# 警察署
+police:
+  osm_tags:
+    - key: "amenity"
+      value: "police"
+
+# 消防署
+fire_station:
+  osm_tags:
+    - key: "amenity"
+      value: "fire_station"
+
+# 映画館
+cinema:
+  osm_tags:
+    - key: "amenity"
+      value: "cinema"
+
+# 劇場
+theatre:
+  osm_tags:
+    - key: "amenity"
+      value: "theatre"
+
+# 美術館
+arts_centre:
+  osm_tags:
+    - key: "amenity"
+      value: "arts_centre"
+    - key: "tourism"
+      value: "museum"
+
+# スポーツセンター
+sports_centre:
+  osm_tags:
+    - key: "leisure"
+      value: "sports_centre"
+
+# フィットネスジム
+fitness_centre:
+  osm_tags:
+    - key: "leisure"
+      value: "fitness_centre"
+
+# 駐車場
+parking:
+  osm_tags:
+    - key: "amenity"
+      value: "parking"
+
+# 駐輪場
+bicycle_parking:
+  osm_tags:
+    - key: "amenity"
+      value: "bicycle_parking"

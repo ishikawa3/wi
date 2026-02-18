@@ -1,0 +1,48 @@
+version: '3.8'
+
+services:
+  # Backend API service
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: wi-backend
+    ports:
+      - "8000:8000"
+    volumes:
+      # Mount data directory as read-only
+      - ./data:/app/data:ro
+      # Mount config directory
+      - ./backend/config:/app/config:ro
+    environment:
+      - DATA_DIR=/app/data/processed
+      - CONFIG_DIR=/app/config
+      - PYTHONUNBUFFERED=1
+    command: uvicorn src.wi.api.main:app --host 0.0.0.0 --port 8000
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/api/v1/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    networks:
+      - wi-network
+
+  # Frontend service
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: wi-frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    environment:
+      - VITE_API_URL=http://backend:8000
+    networks:
+      - wi-network
+
+networks:
+  wi-network:
+    driver: bridge

@@ -1,0 +1,193 @@
+/* Leaflet CSS - Import must be first */
+@import 'leaflet/dist/leaflet.css';
+
+/* CSS Variables for theming */
+:root {
+  --bg-primary: #ecf0f1;
+  --bg-secondary: #ffffff;
+  --bg-header: #2c3e50;
+  --text-primary: #2c3e50;
+  --text-secondary: #555555;
+  --text-muted: #7f8c8d;
+  --border-color: #bdc3c7;
+  --input-bg: #ffffff;
+}
+
+[data-theme="dark"] {
+  --bg-primary: #1a1a2e;
+  --bg-secondary: #16213e;
+  --bg-header: #0f3460;
+  --text-primary: #ecf0f1;
+  --text-secondary: #bdc3c7;
+  --text-muted: #95a5a6;
+  --border-color: #2c3e50;
+  --input-bg: #1e2a3a;
+}
+
+/* Leaflet popup dark mode */
+[data-theme="dark"] .leaflet-popup-content-wrapper,
+[data-theme="dark"] .leaflet-popup-tip {
+  background: #16213e;
+  color: #ecf0f1;
+}
+
+[data-theme="dark"] .leaflet-popup-content-wrapper a {
+  color: #74b9ff;
+}
+
+/* Dark scrollbar */
+[data-theme="dark"] ::-webkit-scrollbar-track {
+  background: #1a1a2e;
+}
+
+[data-theme="dark"] ::-webkit-scrollbar-thumb {
+  background: #2c3e50;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#root {
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* Fix leaflet marker icon issue */
+.leaflet-default-icon-path {
+  background-image: url(https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png);
+}
+
+/* Animations */
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  /* Mobile layout adjustments */
+  .sidebar {
+    width: 100% !important;
+    max-height: 40vh;
+    overflow-y: auto;
+    border-right: none !important;
+    border-bottom: 1px solid #bdc3c7;
+  }
+
+  .main-content {
+    flex-direction: column !important;
+  }
+
+  .map-area {
+    height: 60vh !important;
+  }
+
+  /* Adjust font sizes for mobile */
+  h1 {
+    font-size: 20px !important;
+  }
+
+  h3 {
+    font-size: 14px !important;
+  }
+
+  button, select {
+    font-size: 14px !important;
+    padding: 10px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  /* Smaller mobile adjustments */
+  .sidebar {
+    max-height: 35vh;
+  }
+
+  .map-area {
+    height: 65vh !important;
+  }
+
+  h1 {
+    font-size: 18px !important;
+  }
+
+  button, select {
+    font-size: 13px !important;
+  }
+}
+
+/* Smooth transitions */
+.sidebar-section {
+  animation: fadeIn 0.3s ease-in;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+/* Accessibility improvements */
+button:focus,
+select:focus {
+  outline: 2px solid #3498db;
+  outline-offset: 2px;
+}
+
+/* Print styles */
+@media print {
+  .sidebar {
+    display: none;
+  }
+
+  .map-area {
+    width: 100% !important;
+    height: 100vh !important;
+  }
+}

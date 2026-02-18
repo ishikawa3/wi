@@ -1,0 +1,28 @@
+api:
+  title: "Walkability Index API"
+  version: "1.0.0"
+  description: "REST API for querying Walkability Index scores based on CSIS research"
+
+  # CORS configuration
+  cors_origins:
+    - "http://localhost:5173" # Vite dev server
+    - "http://localhost:3000" # React dev server alternative
+    - "http://localhost" # Docker frontend
+
+  # Data directory (relative to project root)
+  data_dir: "../data/processed"
+
+  # Caching configuration
+  cache:
+    max_datasets: 5 # Maximum number of area-profile combinations to cache
+    ttl_seconds: 3600 # Cache TTL (1 hour)
+
+  # Performance settings
+  performance:
+    max_grid_cells: 10000 # Maximum grid cells to return without bbox filter
+    bbox_filter_enabled: true
+
+  # Logging
+  logging:
+    level: "INFO"
+    format: "<green>{time:YYYY-MM-DD HH:mm:ss}</green> | <level>{level: <8}</level> | <cyan>{name}</cyan>:<cyan>{function}</cyan> - <level>{message}</level>"
