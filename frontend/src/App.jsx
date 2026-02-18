@@ -51,6 +51,61 @@ import { encodeStateToURL, decodeStateFromURL } from './utils/urlState';
 // Styles
 import './styles/index.css';
 
+// Shared button style helpers
+const btnPrimary = {
+  width: '100%',
+  padding: '10px 14px',
+  backgroundColor: 'var(--accent)',
+  color: 'white',
+  border: 'none',
+  borderRadius: '30px',
+  fontSize: '13px',
+  fontWeight: 600,
+  cursor: 'pointer',
+  transition: 'var(--transition)',
+  boxShadow: 'var(--shadow-btn)',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  gap: '6px',
+};
+
+const btnSecondary = {
+  width: '100%',
+  padding: '9px 14px',
+  backgroundColor: 'rgba(0,0,0,0.06)',
+  color: 'var(--text-primary)',
+  border: '1px solid var(--glass-border)',
+  borderRadius: '20px',
+  fontSize: '13px',
+  fontWeight: 500,
+  cursor: 'pointer',
+  transition: 'var(--transition)',
+};
+
+const btnDanger = {
+  width: '100%',
+  padding: '9px 14px',
+  backgroundColor: 'transparent',
+  color: 'var(--accent-danger)',
+  border: '1px solid var(--accent-danger)',
+  borderRadius: '20px',
+  fontSize: '13px',
+  fontWeight: 500,
+  cursor: 'pointer',
+  transition: 'var(--transition)',
+};
+
+const labelStyle = {
+  display: 'block',
+  marginBottom: '6px',
+  fontSize: '12px',
+  fontWeight: 600,
+  color: 'var(--text-secondary)',
+  textTransform: 'uppercase',
+  letterSpacing: '0.4px',
+};
+
 function App() {
   const {
     selectedArea,
@@ -120,7 +175,6 @@ function App() {
       setUrlCopied(true);
       setTimeout(() => setUrlCopied(false), 2000);
     } catch {
-      // Fallback for older browsers
       const input = document.createElement('input');
       input.value = window.location.href;
       document.body.appendChild(input);
@@ -132,7 +186,7 @@ function App() {
     }
   };
 
-  // Hydrate state from URL on mount (Feature 5)
+  // Hydrate state from URL on mount
   useEffect(() => {
     const { area, profile, scoreMin, scoreMax, dark } = decodeStateFromURL();
     if (area) setArea(area);
@@ -142,7 +196,7 @@ function App() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Sync URL when key state changes (Feature 5)
+  // Sync URL when key state changes
   useEffect(() => {
     const url = encodeStateToURL({ selectedArea, selectedProfile, wiScoreFilter, darkMode });
     window.history.replaceState(null, '', url);
@@ -174,20 +228,14 @@ function App() {
   // Fetch WI grid data when area and profile are selected
   const { data: wiGridData, isLoading: wiDataLoading } = useQuery({
     queryKey: ['wiGrid', selectedArea, selectedProfile],
-    queryFn: () => fetchWIGrid({
-      area: selectedArea,
-      profile: selectedProfile,
-    }),
+    queryFn: () => fetchWIGrid({ area: selectedArea, profile: selectedProfile }),
     enabled: Boolean(selectedArea && selectedProfile),
   });
 
   // Fetch WI grid data for profile 2 (comparison mode)
   const { data: wiGridData2, isLoading: wiData2Loading } = useQuery({
     queryKey: ['wiGrid2', selectedArea, selectedProfile2],
-    queryFn: () => fetchWIGrid({
-      area: selectedArea,
-      profile: selectedProfile2,
-    }),
+    queryFn: () => fetchWIGrid({ area: selectedArea, profile: selectedProfile2 }),
     enabled: Boolean(comparisonMode && selectedArea && selectedProfile2),
   });
 
@@ -213,38 +261,24 @@ function App() {
   // Fetch amenities data when types are selected
   const { data: amenitiesData } = useQuery({
     queryKey: ['amenities', selectedArea, selectedAmenityTypes],
-    queryFn: () => fetchAmenities({
-      area: selectedArea,
-      amenityTypes: selectedAmenityTypes
-    }),
+    queryFn: () => fetchAmenities({ area: selectedArea, amenityTypes: selectedAmenityTypes }),
     enabled: Boolean(selectedArea && selectedAmenityTypes.length > 0),
   });
 
   // Update store when WI data changes
   useEffect(() => {
-    if (wiGridData) {
-      setWIData(wiGridData);
-    }
+    if (wiGridData) setWIData(wiGridData);
   }, [wiGridData, setWIData]);
 
-  // Update store when WI data 2 changes (comparison mode)
   useEffect(() => {
-    if (wiGridData2) {
-      setWIData2(wiGridData2);
-    }
+    if (wiGridData2) setWIData2(wiGridData2);
   }, [wiGridData2, setWIData2]);
 
-  // Update point query result
   useEffect(() => {
-    if (pointData) {
-      setPointQueryResult(pointData);
-    }
+    if (pointData) setPointQueryResult(pointData);
   }, [pointData]);
 
-  // Handler for map click
   const handleMapClick = (lat, lon) => {
-    console.log('Map clicked:', { lat, lon });
-
     if (selectedArea && selectedProfile) {
       setPointQueryParams({ lat, lon });
     } else {
@@ -252,62 +286,39 @@ function App() {
     }
   };
 
-  // Custom WI calculation mutation
   const customWIMutation = useMutation({
     mutationFn: calculateCustomWI,
     onSuccess: (data) => {
-      console.log('Custom WI calculated:', data);
       setWIData(data);
-      toggleEditorMode(); // Close editor after applying
+      toggleEditorMode();
     },
-    onError: (error) => {
-      console.error('Failed to calculate custom WI:', error);
+    onError: () => {
       alert('カスタムWI計算に失敗しました');
     }
   });
 
-  // Handler for opening profile editor
   const handleOpenEditor = async () => {
-    if (!selectedProfile) {
-      alert('プロファイルを選択してください');
-      return;
-    }
-
+    if (!selectedProfile) { alert('プロファイルを選択してください'); return; }
     try {
-      // Fetch profile defaults
       const defaults = await fetchProfileDefaults(selectedProfile);
       setProfileDefaults(defaults);
       toggleEditorMode();
-    } catch (error) {
-      console.error('Failed to fetch profile defaults:', error);
+    } catch {
       alert('プロファイル設定の読み込みに失敗しました');
     }
   };
 
-  // Handler for applying custom profile
   const handleApplyCustomProfile = (customProfile) => {
-    if (!selectedArea) {
-      alert('エリアを選択してください');
-      return;
-    }
-
-    customWIMutation.mutate({
-      area: selectedArea,
-      profileName: customProfile.name,
-      weights: customProfile.weights
-    });
+    if (!selectedArea) { alert('エリアを選択してください'); return; }
+    customWIMutation.mutate({ area: selectedArea, profileName: customProfile.name, weights: customProfile.weights });
   };
 
-  // Handler for canceling editor
   const handleCancelEditor = () => {
     setProfileDefaults(null);
     toggleEditorMode();
   };
 
-  // Handler for address selection
-  const handleAddressSelect = ({ lat, lon, address }) => {
-    console.log('Address selected:', { lat, lon, address });
-
+  const handleAddressSelect = ({ lat, lon }) => {
     if (selectedArea && selectedProfile) {
       setPointQueryParams({ lat, lon });
     } else {
@@ -315,7 +326,7 @@ function App() {
     }
   };
 
-  // Filtered WI data by score range (Feature 2)
+  // Score filter
   const filteredWIData = useMemo(() => {
     if (!wiData) return null;
     const { min, max } = wiScoreFilter;
@@ -329,7 +340,7 @@ function App() {
     };
   }, [wiData, wiScoreFilter]);
 
-  // Spatially filtered WI data by custom drawn area (Feature 6)
+  // Spatial filter
   const spatiallyFilteredWIData = useMemo(() => {
     if (!customAreaBounds || !filteredWIData) return filteredWIData;
     const { minLat, maxLat, minLon, maxLon } = customAreaBounds;
@@ -348,125 +359,57 @@ function App() {
   }, [filteredWIData, customAreaBounds]);
 
   return (
-    <div style={{
-      display: 'flex',
-      flexDirection: 'column',
-      height: '100vh',
-      overflow: 'hidden'
-    }}>
-      {/* Header */}
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', overflow: 'hidden' }}>
       <Header darkMode={darkMode} onToggleDarkMode={toggleDarkMode} />
 
-      {/* Main content area */}
-      <div style={{
-        display: 'flex',
-        flex: 1,
-        overflow: 'hidden'
-      }}>
-        {/* Sidebar with controls */}
+      <div className="main-content" style={{ position: 'relative', flex: 1, overflow: 'hidden' }}>
         <Sidebar darkMode={darkMode}>
-          {/* Area and Profile Selectors */}
+
+          {/* Data selection */}
           <SidebarSection title="データ選択" darkMode={darkMode}>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
-              {/* Comparison Mode Toggle */}
-              <ComparisonToggle
-                enabled={comparisonMode}
-                onToggle={toggleComparisonMode}
-              />
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+              <ComparisonToggle enabled={comparisonMode} onToggle={toggleComparisonMode} />
 
               <div>
-                <label style={{
-                  display: 'block',
-                  marginBottom: '5px',
-                  fontSize: '13px',
-                  fontWeight: 600,
-                  color: '#555'
-                }}>
-                  エリア
-                </label>
-                <AreaSelector
-                  areas={areas || []}
-                  selected={selectedArea}
-                  onChange={setArea}
-                  disabled={areasLoading}
-                />
+                <label style={labelStyle}>エリア</label>
+                <AreaSelector areas={areas || []} selected={selectedArea} onChange={setArea} disabled={areasLoading} />
               </div>
+
               <div>
-                <label style={{
-                  display: 'block',
-                  marginBottom: '5px',
-                  fontSize: '13px',
-                  fontWeight: 600,
-                  color: comparisonMode ? '#3498db' : '#555'
-                }}>
+                <label style={{ ...labelStyle, color: comparisonMode ? 'var(--accent)' : 'var(--text-secondary)' }}>
                   {comparisonMode ? 'プロファイル 1' : 'プロファイル'}
                 </label>
-                <ProfileSelector
-                  profiles={profiles || []}
-                  selected={selectedProfile}
-                  onChange={setProfile}
-                  disabled={profilesLoading}
-                />
+                <ProfileSelector profiles={profiles || []} selected={selectedProfile} onChange={setProfile} disabled={profilesLoading} />
               </div>
 
-              {/* Profile 2 selector (comparison mode only) */}
               {comparisonMode && (
                 <div>
-                  <label style={{
-                    display: 'block',
-                    marginBottom: '5px',
-                    fontSize: '13px',
-                    fontWeight: 600,
-                    color: '#e74c3c'
-                  }}>
-                    プロファイル 2
-                  </label>
-                  <ProfileSelector
-                    profiles={profiles || []}
-                    selected={selectedProfile2}
-                    onChange={setProfile2}
-                    disabled={profilesLoading}
-                  />
+                  <label style={{ ...labelStyle, color: 'var(--accent-danger)' }}>プロファイル 2</label>
+                  <ProfileSelector profiles={profiles || []} selected={selectedProfile2} onChange={setProfile2} disabled={profilesLoading} />
                 </div>
               )}
 
               {(wiDataLoading || (comparisonMode && wiData2Loading)) && (
                 <div style={{
                   padding: '10px',
-                  backgroundColor: '#e8f4f8',
-                  borderRadius: '4px',
+                  backgroundColor: 'rgba(0,122,255,0.08)',
+                  borderRadius: 'var(--radius-sm)',
                   fontSize: '13px',
-                  color: '#2980b9',
-                  textAlign: 'center'
+                  color: 'var(--accent)',
+                  textAlign: 'center',
                 }}>
                   データ読み込み中...
                 </div>
               )}
 
-              {/* Customize Button */}
               {!comparisonMode && selectedProfile && !editorMode && (
                 <button
                   onClick={handleOpenEditor}
-                  style={{
-                    width: '100%',
-                    padding: '10px',
-                    backgroundColor: '#9b59b6',
-                    color: 'white',
-                    border: 'none',
-                    borderRadius: '4px',
-                    fontSize: '13px',
-                    fontWeight: 600,
-                    cursor: 'pointer',
-                    transition: 'background-color 0.2s',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    gap: '8px'
-                  }}
-                  onMouseOver={(e) => e.target.style.backgroundColor = '#8e44ad'}
-                  onMouseOut={(e) => e.target.style.backgroundColor = '#9b59b6'}
+                  style={{ ...btnPrimary, backgroundColor: 'var(--accent-purple)' }}
+                  onMouseEnter={(e) => { e.currentTarget.style.opacity = '0.85'; }}
+                  onMouseLeave={(e) => { e.currentTarget.style.opacity = '1'; }}
                 >
-                  <span style={{ fontSize: '16px' }}>✏️</span>
+                  <span>✏</span>
                   プロファイルをカスタマイズ
                 </button>
               )}
@@ -477,20 +420,11 @@ function App() {
           {editorMode && !comparisonMode && (
             <SidebarSection title="プロファイルエディタ" darkMode={darkMode}>
               {customWIMutation.isLoading ? (
-                <div style={{
-                  padding: '20px',
-                  textAlign: 'center',
-                  fontSize: '13px',
-                  color: '#2980b9'
-                }}>
+                <div style={{ padding: '20px', textAlign: 'center', fontSize: '13px', color: 'var(--accent)' }}>
                   カスタムWIを計算中...
                 </div>
               ) : (
-                <ProfileEditor
-                  baseProfile={profileDefaults}
-                  onApply={handleApplyCustomProfile}
-                  onCancel={handleCancelEditor}
-                />
+                <ProfileEditor baseProfile={profileDefaults} onApply={handleApplyCustomProfile} onCancel={handleCancelEditor} />
               )}
             </SidebarSection>
           )}
@@ -505,49 +439,25 @@ function App() {
           {/* Score Filter */}
           {wiData && !comparisonMode && !editorMode && (
             <SidebarSection title="スコアフィルター" darkMode={darkMode}>
-              <WIScoreFilter
-                min={wiScoreFilter.min}
-                max={wiScoreFilter.max}
-                onChange={setWIScoreFilter}
-              />
+              <WIScoreFilter min={wiScoreFilter.min} max={wiScoreFilter.max} onChange={setWIScoreFilter} />
             </SidebarSection>
           )}
 
-          {/* Custom Area Clear Button */}
+          {/* Custom Area Clear */}
           {customAreaBounds && !comparisonMode && !editorMode && (
             <SidebarSection darkMode={darkMode}>
-              <div style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                marginBottom: '8px',
-                fontSize: '12px',
-                color: darkMode ? '#bdc3c7' : '#555',
-              }}>
-                <span>カスタムエリア選択中</span>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '10px' }}>
+                <span style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>カスタムエリア選択中</span>
                 <span style={{
-                  backgroundColor: '#3498db',
+                  backgroundColor: 'var(--accent)',
                   color: 'white',
-                  padding: '2px 6px',
+                  padding: '2px 8px',
                   borderRadius: '10px',
                   fontSize: '10px',
-                }}>
-                  アクティブ
-                </span>
+                  fontWeight: 600,
+                }}>アクティブ</span>
               </div>
-              <button
-                onClick={() => setCustomAreaBounds(null)}
-                style={{
-                  width: '100%',
-                  padding: '8px',
-                  backgroundColor: 'transparent',
-                  color: '#e74c3c',
-                  border: '1px solid #e74c3c',
-                  borderRadius: '4px',
-                  fontSize: '12px',
-                  cursor: 'pointer',
-                }}
-              >
+              <button onClick={() => setCustomAreaBounds(null)} style={btnDanger}>
                 カスタムエリアをクリア
               </button>
             </SidebarSection>
@@ -573,7 +483,6 @@ function App() {
               <SidebarSection title="分布チャート" darkMode={darkMode}>
                 <WIHistogram wiData={spatiallyFilteredWIData} />
               </SidebarSection>
-
               <SidebarSection title="箱ひげ図" darkMode={darkMode}>
                 <WIBoxPlot wiData={spatiallyFilteredWIData} width={280} height={200} />
               </SidebarSection>
@@ -584,12 +493,8 @@ function App() {
           {comparisonMode && wiData?.metadata?.statistics && wiData2?.metadata?.statistics && (
             <>
               <SidebarSection title="表示モード" darkMode={darkMode}>
-                <ComparisonModeSelector
-                  mode={comparisonDisplayMode}
-                  onModeChange={setComparisonDisplayMode}
-                />
+                <ComparisonModeSelector mode={comparisonDisplayMode} onModeChange={setComparisonDisplayMode} />
               </SidebarSection>
-
               <SidebarSection title="比較統計" darkMode={darkMode}>
                 <ComparisonStatistics
                   stats1={wiData.metadata.statistics}
@@ -598,7 +503,6 @@ function App() {
                   profile2Name={profiles?.find(p => p.id === selectedProfile2)?.name}
                 />
               </SidebarSection>
-
               {comparisonDisplayMode === 'difference' && (
                 <SidebarSection title="差分統計" darkMode={darkMode}>
                   <DifferenceStatistics
@@ -612,30 +516,20 @@ function App() {
             </>
           )}
 
-          {/* Export Buttons */}
+          {/* Export */}
           {wiData && selectedArea && selectedProfile && !comparisonMode && !editorMode && (
             <>
               <SidebarSection title="エクスポート" darkMode={darkMode}>
-                <ExportButtons
-                  wiData={wiData}
-                  selectedArea={selectedArea}
-                  selectedProfile={selectedProfile}
-                />
-                {/* URL Share Button */}
+                <ExportButtons wiData={wiData} selectedArea={selectedArea} selectedProfile={selectedProfile} />
                 <button
                   onClick={handleCopyURL}
                   style={{
+                    ...btnSecondary,
                     marginTop: '10px',
-                    width: '100%',
-                    padding: '8px',
-                    backgroundColor: urlCopied ? '#27ae60' : '#8e44ad',
+                    backgroundColor: urlCopied ? 'var(--accent-success)' : 'var(--accent-purple)',
                     color: 'white',
                     border: 'none',
-                    borderRadius: '4px',
-                    fontSize: '13px',
-                    fontWeight: 600,
-                    cursor: 'pointer',
-                    transition: 'background-color 0.3s',
+                    boxShadow: 'var(--shadow-btn)',
                   }}
                 >
                   {urlCopied ? 'コピーしました！' : 'URLをコピー (共有)'}
@@ -663,79 +557,56 @@ function App() {
             </SidebarSection>
           )}
 
-          {/* Point Query Result */}
+          {/* Point Query loading */}
           {!comparisonMode && !editorMode && pointDataLoading && (
             <SidebarSection title="地点詳細" darkMode={darkMode}>
               <div style={{
-                padding: '10px',
-                backgroundColor: '#e8f4f8',
-                borderRadius: '4px',
+                padding: '12px',
+                backgroundColor: 'rgba(0,122,255,0.08)',
+                borderRadius: 'var(--radius-sm)',
                 fontSize: '13px',
-                color: '#2980b9',
-                textAlign: 'center'
+                color: 'var(--accent)',
+                textAlign: 'center',
               }}>
                 最寄りグリッド検索中...
               </div>
             </SidebarSection>
           )}
 
+          {/* Point Query Result */}
           {!comparisonMode && !editorMode && pointQueryResult && !pointDataLoading && (
             <SidebarSection title="地点詳細" darkMode={darkMode}>
-              <div style={{
-                padding: '15px',
-                backgroundColor: 'white',
-                borderRadius: '8px',
-                boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
-              }}>
-                {/* WI Score - Large display */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                {/* WI Score display */}
                 <div style={{
                   textAlign: 'center',
-                  marginBottom: '15px',
-                  padding: '15px',
-                  backgroundColor: '#f8f9fa',
-                  borderRadius: '8px'
+                  padding: '16px',
+                  backgroundColor: 'var(--glass-bg)',
+                  backdropFilter: 'var(--glass-blur)',
+                  WebkitBackdropFilter: 'var(--glass-blur)',
+                  borderRadius: 'var(--radius-md)',
+                  border: '1px solid var(--glass-border)',
                 }}>
-                  <div style={{
-                    fontSize: '12px',
-                    color: '#7f8c8d',
-                    marginBottom: '5px'
-                  }}>
+                  <div style={{ fontSize: '11px', color: 'var(--text-muted)', marginBottom: '4px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
                     WI スコア
                   </div>
-                  <div style={{
-                    fontSize: '36px',
-                    fontWeight: 700,
-                    color: '#2c3e50'
-                  }}>
+                  <div style={{ fontSize: '40px', fontWeight: 700, color: 'var(--text-primary)', lineHeight: 1 }}>
                     {pointQueryResult.wi_score.toFixed(1)}
                   </div>
-                  <div style={{
-                    fontSize: '11px',
-                    color: '#95a5a6',
-                    marginTop: '5px'
-                  }}>
-                    / 100
-                  </div>
+                  <div style={{ fontSize: '11px', color: 'var(--text-muted)', marginTop: '4px' }}>/ 100</div>
                 </div>
 
-                {/* Favorite toggle button */}
+                {/* Favorite button */}
                 {(() => {
                   const isFav = !!findFavoriteByLocation(pointQueryResult.lat, pointQueryResult.lon);
                   return (
                     <button
                       onClick={handleAddFavorite}
                       style={{
-                        width: '100%',
-                        padding: '8px',
-                        marginBottom: '15px',
-                        backgroundColor: isFav ? '#f39c12' : 'transparent',
-                        color: isFav ? 'white' : '#f39c12',
-                        border: `1px solid #f39c12`,
-                        borderRadius: '4px',
-                        fontSize: '13px',
-                        fontWeight: 600,
-                        cursor: 'pointer',
-                        transition: 'all 0.2s',
+                        ...btnSecondary,
+                        backgroundColor: isFav ? 'var(--accent-warning)' : 'transparent',
+                        color: isFav ? 'white' : 'var(--accent-warning)',
+                        border: `1px solid var(--accent-warning)`,
                       }}
                     >
                       {isFav ? '★ お気に入り解除' : '☆ お気に入り登録'}
@@ -743,42 +614,27 @@ function App() {
                   );
                 })()}
 
-                {/* Grid Info */}
-                <div style={{ marginBottom: '15px' }}>
-                  <div style={{
-                    fontSize: '12px',
-                    color: '#7f8c8d',
-                    marginBottom: '5px'
-                  }}>
-                    グリッドID
-                  </div>
+                {/* Grid ID */}
+                <div>
+                  <div style={{ fontSize: '11px', color: 'var(--text-muted)', marginBottom: '4px', textTransform: 'uppercase', letterSpacing: '0.4px' }}>グリッドID</div>
                   <div style={{
                     fontSize: '11px',
-                    color: '#2c3e50',
+                    color: 'var(--text-secondary)',
                     fontFamily: 'monospace',
-                    padding: '8px',
-                    backgroundColor: '#f8f9fa',
-                    borderRadius: '4px',
-                    wordBreak: 'break-all'
+                    padding: '8px 10px',
+                    backgroundColor: 'var(--glass-bg)',
+                    border: '1px solid var(--glass-border)',
+                    borderRadius: 'var(--radius-xs)',
+                    wordBreak: 'break-all',
                   }}>
                     {pointQueryResult.grid_id}
                   </div>
                 </div>
 
                 {/* Coordinates */}
-                <div style={{ marginBottom: '15px' }}>
-                  <div style={{
-                    fontSize: '12px',
-                    color: '#7f8c8d',
-                    marginBottom: '5px'
-                  }}>
-                    クリック位置
-                  </div>
-                  <div style={{
-                    fontSize: '12px',
-                    color: '#2c3e50',
-                    fontFamily: 'monospace'
-                  }}>
+                <div>
+                  <div style={{ fontSize: '11px', color: 'var(--text-muted)', marginBottom: '4px', textTransform: 'uppercase', letterSpacing: '0.4px' }}>クリック位置</div>
+                  <div style={{ fontSize: '12px', color: 'var(--text-secondary)', fontFamily: 'monospace' }}>
                     緯度: {pointQueryResult.lat.toFixed(6)}<br />
                     経度: {pointQueryResult.lon.toFixed(6)}
                   </div>
@@ -790,10 +646,10 @@ function App() {
                     <div style={{
                       fontSize: '13px',
                       fontWeight: 600,
-                      color: '#2c3e50',
+                      color: 'var(--text-primary)',
                       marginBottom: '10px',
                       paddingBottom: '8px',
-                      borderBottom: '2px solid #3498db'
+                      borderBottom: '1.5px solid var(--accent)',
                     }}>
                       アメニティ別スコア
                     </div>
@@ -801,31 +657,20 @@ function App() {
                       {Object.entries(pointQueryResult.amenity_scores)
                         .sort((a, b) => b[1] - a[1])
                         .map(([name, score]) => {
-                          const percentage = (score * 100).toFixed(0);
+                          const pct = (score * 100).toFixed(0);
                           return (
-                            <div key={name} style={{ marginBottom: '5px' }}>
-                              <div style={{
-                                display: 'flex',
-                                justifyContent: 'space-between',
-                                marginBottom: '4px',
-                                fontSize: '12px'
-                              }}>
-                                <span style={{ color: '#555' }}>{name}</span>
-                                <span style={{ fontWeight: 600, color: '#2c3e50' }}>
-                                  {percentage}%
-                                </span>
+                            <div key={name}>
+                              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px', fontSize: '12px' }}>
+                                <span style={{ color: 'var(--text-secondary)' }}>{name}</span>
+                                <span style={{ fontWeight: 600, color: 'var(--text-primary)' }}>{pct}%</span>
                               </div>
-                              <div style={{
-                                height: '8px',
-                                backgroundColor: '#e0e0e0',
-                                borderRadius: '4px',
-                                overflow: 'hidden'
-                              }}>
+                              <div style={{ height: '6px', backgroundColor: 'var(--glass-border)', borderRadius: '3px', overflow: 'hidden' }}>
                                 <div style={{
                                   height: '100%',
-                                  width: `${percentage}%`,
-                                  backgroundColor: '#3498db',
-                                  transition: 'width 0.3s ease'
+                                  width: `${pct}%`,
+                                  backgroundColor: 'var(--accent)',
+                                  borderRadius: '3px',
+                                  transition: 'width 0.4s ease',
                                 }} />
                               </div>
                             </div>
@@ -835,31 +680,15 @@ function App() {
                   </div>
                 )}
 
-                {/* Amenity Radar Chart */}
+                {/* Radar Chart */}
                 {pointQueryResult.amenity_scores && (
-                  <AmenityRadarChart amenityScores={pointQueryResult.amenity_scores} />
+                  <AmenityRadarChart amenityScores={pointQueryResult.amenity_scores} darkMode={darkMode} />
                 )}
 
                 {/* Close button */}
                 <button
-                  onClick={() => {
-                    setPointQueryResult(null);
-                    setPointQueryParams(null);
-                  }}
-                  style={{
-                    marginTop: '15px',
-                    width: '100%',
-                    padding: '8px',
-                    backgroundColor: '#95a5a6',
-                    color: 'white',
-                    border: 'none',
-                    borderRadius: '4px',
-                    fontSize: '13px',
-                    cursor: 'pointer',
-                    transition: 'background-color 0.2s'
-                  }}
-                  onMouseOver={(e) => e.target.style.backgroundColor = '#7f8c8d'}
-                  onMouseOut={(e) => e.target.style.backgroundColor = '#95a5a6'}
+                  onClick={() => { setPointQueryResult(null); setPointQueryParams(null); }}
+                  style={btnSecondary}
                 >
                   閉じる
                 </button>
@@ -870,33 +699,26 @@ function App() {
           {/* Favorites List */}
           {!comparisonMode && !editorMode && (
             <SidebarSection title="お気に入り" darkMode={darkMode}>
-              <FavoritesList
-                favorites={favorites}
-                onRemove={handleRemoveFavorite}
-                onFlyTo={handleFlyToFavorite}
-                darkMode={darkMode}
-              />
+              <FavoritesList favorites={favorites} onRemove={handleRemoveFavorite} onFlyTo={handleFlyToFavorite} darkMode={darkMode} />
             </SidebarSection>
           )}
+
         </Sidebar>
 
         {/* Map area */}
-        <div style={{ flex: 1, position: 'relative' }}>
+        <div className="map-area" style={{ position: 'absolute', inset: 0, isolation: 'isolate' }}>
           {comparisonMode ? (
-            // Comparison mode - show side by side or difference view
             selectedArea && selectedProfile && selectedProfile2 ? (
               comparisonDisplayMode === 'difference' ? (
                 <DifferenceMapView
-                  wiData1={wiData}
-                  wiData2={wiData2}
+                  wiData1={wiData} wiData2={wiData2}
                   profile1Name={profiles?.find(p => p.id === selectedProfile)?.name}
                   profile2Name={profiles?.find(p => p.id === selectedProfile2)?.name}
                   onMapClick={handleMapClick}
                 />
               ) : (
                 <ComparisonMapView
-                  wiData1={wiData}
-                  wiData2={wiData2}
+                  wiData1={wiData} wiData2={wiData2}
                   profile1Name={profiles?.find(p => p.id === selectedProfile)?.name}
                   profile2Name={profiles?.find(p => p.id === selectedProfile2)?.name}
                   onMapClick={handleMapClick}
@@ -904,20 +726,14 @@ function App() {
               )
             ) : (
               <div style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                height: '100%',
-                backgroundColor: '#ecf0f1',
-                color: '#7f8c8d',
-                fontSize: '18px',
-                fontWeight: 500
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                height: '100%', backgroundColor: 'var(--page-bg)',
+                color: 'var(--text-muted)', fontSize: '16px', fontWeight: 500,
               }}>
                 エリアと2つのプロファイルを選択してください
               </div>
             )
           ) : (
-            // Single mode - show one map
             selectedArea && selectedProfile ? (
               <MapView
                 wiData={spatiallyFilteredWIData}
@@ -932,14 +748,9 @@ function App() {
               />
             ) : (
               <div style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                height: '100%',
-                backgroundColor: '#ecf0f1',
-                color: '#7f8c8d',
-                fontSize: '18px',
-                fontWeight: 500
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                height: '100%', backgroundColor: 'var(--page-bg)',
+                color: 'var(--text-muted)', fontSize: '16px', fontWeight: 500,
               }}>
                 エリアとプロファイルを選択してください
               </div>

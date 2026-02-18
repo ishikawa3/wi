@@ -1,49 +1,93 @@
 /* Leaflet CSS - Import must be first */
 @import 'leaflet/dist/leaflet.css';
 
-/* CSS Variables for theming */
+/* ============================================================
+   Liquid Glass Design System — CSS Variables
+   ============================================================ */
 :root {
-  --bg-primary: #ecf0f1;
-  --bg-secondary: #ffffff;
-  --bg-header: #2c3e50;
-  --text-primary: #2c3e50;
-  --text-secondary: #555555;
-  --text-muted: #7f8c8d;
-  --border-color: #bdc3c7;
-  --input-bg: #ffffff;
+  /* Glass materials */
+  --glass-bg: rgba(255, 255, 255, 0.55);
+  --glass-bg-strong: rgba(255, 255, 255, 0.72);
+  --glass-bg-card: rgba(255, 255, 255, 0.45);
+  --glass-blur: blur(40px) saturate(200%) brightness(1.02);
+  --glass-border: rgba(0, 0, 0, 0.08);
+  --glass-inset-border: rgba(255, 255, 255, 0.5);
+
+  /* Typography colors */
+  --text-primary: rgba(0, 0, 0, 0.85);
+  --text-secondary: rgba(0, 0, 0, 0.55);
+  --text-muted: rgba(0, 0, 0, 0.35);
+
+  /* Accent colors */
+  --accent: #007AFF;
+  --accent-hover: #0051D4;
+  --accent-danger: rgba(255, 59, 48, 0.90);
+  --accent-danger-hover: rgba(215, 0, 21, 0.90);
+  --accent-warning: rgba(255, 149, 0, 0.90);
+  --accent-success: rgba(52, 199, 89, 0.90);
+  --accent-purple: rgba(175, 82, 222, 0.90);
+
+  /* Shape */
+  --radius-xl: 20px;
+  --radius-lg: 16px;
+  --radius-md: 12px;
+  --radius-sm: 10px;
+  --radius-xs: 8px;
+
+  /* Shadows */
+  --shadow-glass:
+    inset 0 1.5px 0 rgba(255, 255, 255, 0.80),
+    inset 0 -0.5px 0 rgba(0, 0, 0, 0.06),
+    0 20px 60px rgba(0, 0, 0, 0.10),
+    0 2px 8px rgba(0, 0, 0, 0.06);
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.06);
+  --shadow-btn: 0 4px 12px rgba(0, 122, 255, 0.22);
+  --shadow-btn-danger: 0 4px 12px rgba(255, 59, 48, 0.22);
+
+  /* Typography */
+  --font-system: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", sans-serif;
+
+  /* Page background */
+  --page-bg: #f2f2f7;
+
+  /* Transition */
+  --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 [data-theme="dark"] {
-  --bg-primary: #1a1a2e;
-  --bg-secondary: #16213e;
-  --bg-header: #0f3460;
-  --text-primary: #ecf0f1;
-  --text-secondary: #bdc3c7;
-  --text-muted: #95a5a6;
-  --border-color: #2c3e50;
-  --input-bg: #1e2a3a;
+  --glass-bg: rgba(30, 30, 32, 0.60);
+  --glass-bg-strong: rgba(30, 30, 32, 0.78);
+  --glass-bg-card: rgba(40, 40, 44, 0.55);
+  --glass-border: rgba(255, 255, 255, 0.10);
+  --glass-inset-border: rgba(255, 255, 255, 0.08);
+
+  --text-primary: rgba(255, 255, 255, 0.92);
+  --text-secondary: rgba(255, 255, 255, 0.60);
+  --text-muted: rgba(255, 255, 255, 0.35);
+
+  --accent: #0A84FF;
+  --accent-hover: #409CFF;
+  --accent-danger: rgba(255, 69, 58, 0.90);
+  --accent-danger-hover: rgba(255, 105, 97, 0.90);
+  --accent-warning: rgba(255, 159, 10, 0.90);
+  --accent-success: rgba(48, 209, 88, 0.90);
+  --accent-purple: rgba(191, 90, 242, 0.90);
+
+  --shadow-glass:
+    inset 0 1px 0 rgba(255, 255, 255, 0.18),
+    inset 0 -0.5px 0 rgba(0, 0, 0, 0.30),
+    0 20px 60px rgba(0, 0, 0, 0.50),
+    0 2px 8px rgba(0, 0, 0, 0.30);
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.35);
+  --shadow-btn: 0 4px 12px rgba(10, 132, 255, 0.30);
+  --shadow-btn-danger: 0 4px 12px rgba(255, 69, 58, 0.30);
+
+  --page-bg: #1c1c1e;
 }
 
-/* Leaflet popup dark mode */
-[data-theme="dark"] .leaflet-popup-content-wrapper,
-[data-theme="dark"] .leaflet-popup-tip {
-  background: #16213e;
-  color: #ecf0f1;
-}
-
-[data-theme="dark"] .leaflet-popup-content-wrapper a {
-  color: #74b9ff;
-}
-
-/* Dark scrollbar */
-[data-theme="dark"] ::-webkit-scrollbar-track {
-  background: #1a1a2e;
-}
-
-[data-theme="dark"] ::-webkit-scrollbar-thumb {
-  background: #2c3e50;
-}
-
+/* ============================================================
+   Base Styles
+   ============================================================ */
 * {
   margin: 0;
   padding: 0;
@@ -51,11 +95,12 @@
 }
 
 body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
+  font-family: var(--font-system);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  background: var(--page-bg);
+  color: var(--text-primary);
+  transition: background-color 0.3s;
 }
 
 #root {
@@ -69,43 +114,107 @@ body {
   background-image: url(https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png);
 }
 
-/* Animations */
+/* ============================================================
+   Leaflet Popup — Liquid Glass Style
+   ============================================================ */
+.leaflet-popup-content-wrapper {
+  background: var(--glass-bg-strong) !important;
+  backdrop-filter: var(--glass-blur) !important;
+  -webkit-backdrop-filter: var(--glass-blur) !important;
+  border: 1px solid var(--glass-border) !important;
+  border-radius: var(--radius-lg) !important;
+  box-shadow: var(--shadow-glass) !important;
+  color: var(--text-primary) !important;
+}
+
+.leaflet-popup-tip {
+  background: var(--glass-bg-strong) !important;
+}
+
+.leaflet-popup-content-wrapper a {
+  color: var(--accent) !important;
+}
+
+/* ============================================================
+   Scrollbar
+   ============================================================ */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.15);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.25);
+}
+
+[data-theme="dark"] ::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+[data-theme="dark"] ::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+/* ============================================================
+   Animations
+   ============================================================ */
 @keyframes pulse {
-  0%, 100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.5;
-  }
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
 }
 
 @keyframes spin {
-  0% {
-    transform: rotate(0deg);
-  }
-  100% {
-    transform: rotate(360deg);
-  }
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
 
 @keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
-/* Responsive design */
+/* ============================================================
+   Sidebar / Section
+   ============================================================ */
+.sidebar-section {
+  animation: fadeIn 0.3s ease-out;
+}
+
+/* ============================================================
+   Accessibility
+   ============================================================ */
+button:focus-visible,
+select:focus-visible,
+input:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* ============================================================
+   Responsive Design
+   ============================================================ */
 @media (max-width: 768px) {
-  /* Mobile layout adjustments */
   .sidebar {
+    position: absolute !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    top: auto !important;
     width: 100% !important;
-    max-height: 40vh;
+    height: 42vh;
+    max-height: 42vh;
     overflow-y: auto;
     border-right: none !important;
-    border-bottom: 1px solid #bdc3c7;
+    border-top: 1px solid var(--glass-border);
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
   }
 
   .main-content {
@@ -113,10 +222,9 @@ body {
   }
 
   .map-area {
-    height: 60vh !important;
+    height: 58vh !important;
   }
 
-  /* Adjust font sizes for mobile */
   h1 {
     font-size: 20px !important;
   }
@@ -132,7 +240,6 @@ body {
 }
 
 @media (max-width: 480px) {
-  /* Smaller mobile adjustments */
   .sidebar {
     max-height: 35vh;
   }
@@ -150,37 +257,9 @@ body {
   }
 }
 
-/* Smooth transitions */
-.sidebar-section {
-  animation: fadeIn 0.3s ease-in;
-}
-
-/* Custom scrollbar */
-::-webkit-scrollbar {
-  width: 8px;
-}
-
-::-webkit-scrollbar-track {
-  background: #f1f1f1;
-}
-
-::-webkit-scrollbar-thumb {
-  background: #888;
-  border-radius: 4px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: #555;
-}
-
-/* Accessibility improvements */
-button:focus,
-select:focus {
-  outline: 2px solid #3498db;
-  outline-offset: 2px;
-}
-
-/* Print styles */
+/* ============================================================
+   Print
+   ============================================================ */
 @media print {
   .sidebar {
     display: none;

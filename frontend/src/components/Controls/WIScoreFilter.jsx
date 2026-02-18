@@ -1,11 +1,9 @@
 import React, { useState, useCallback } from 'react';
 
 /**
- * WI Score Dual Range Slider Filter Component
- * Allows filtering the displayed WI grid by score range
+ * WI Score Dual Range Slider Filter Component — Liquid Glass
  */
 const WIScoreFilter = ({ min, max, onChange }) => {
-  // Track which thumb is on top (for z-index during drag)
   const [thumbTop, setThumbTop] = useState('max');
 
   const handleMinChange = useCallback((e) => {
@@ -21,10 +19,7 @@ const WIScoreFilter = ({ min, max, onChange }) => {
   }, [min, onChange]);
 
   const handleReset = () => onChange({ min: 0, max: 100 });
-
   const isFiltered = min !== 0 || max !== 100;
-
-  // Percentage positions for the filled track
   const leftPct = min;
   const widthPct = max - min;
 
@@ -43,18 +38,12 @@ const WIScoreFilter = ({ min, max, onChange }) => {
 
   return (
     <div style={{ padding: '4px 0' }}>
-      {/* Range display */}
-      <div style={{
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        marginBottom: '10px',
-      }}>
-        <span style={{ fontSize: '12px', color: '#555' }}>スコア範囲</span>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
+        <span style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>スコア範囲</span>
         <span style={{
           fontSize: '13px',
           fontWeight: 700,
-          color: isFiltered ? '#e67e22' : '#2c3e50',
+          color: isFiltered ? 'var(--accent-warning)' : 'var(--text-primary)',
           minWidth: '80px',
           textAlign: 'right',
         }}>
@@ -62,103 +51,49 @@ const WIScoreFilter = ({ min, max, onChange }) => {
         </span>
       </div>
 
-      {/* Dual range slider */}
-      <div style={{
-        position: 'relative',
-        height: '28px',
-        marginBottom: '6px',
-      }}>
+      <div style={{ position: 'relative', height: '28px', marginBottom: '6px' }}>
         {/* Track background */}
         <div style={{
-          position: 'absolute',
-          top: '50%',
-          left: 0,
-          right: 0,
-          height: '4px',
-          transform: 'translateY(-50%)',
-          backgroundColor: '#ddd',
-          borderRadius: '2px',
-          pointerEvents: 'none',
+          position: 'absolute', top: '50%', left: 0, right: 0,
+          height: '4px', transform: 'translateY(-50%)',
+          backgroundColor: 'var(--glass-border)', borderRadius: '2px', pointerEvents: 'none',
         }} />
         {/* Active track */}
         <div style={{
-          position: 'absolute',
-          top: '50%',
-          left: `${leftPct}%`,
-          width: `${widthPct}%`,
-          height: '4px',
-          transform: 'translateY(-50%)',
-          backgroundColor: '#3498db',
-          borderRadius: '2px',
-          pointerEvents: 'none',
+          position: 'absolute', top: '50%', left: `${leftPct}%`, width: `${widthPct}%`,
+          height: '4px', transform: 'translateY(-50%)',
+          backgroundColor: 'var(--accent)', borderRadius: '2px', pointerEvents: 'none',
         }} />
-
-        {/* Min thumb */}
-        <input
-          type="range"
-          min={0}
-          max={100}
-          step={1}
-          value={min}
+        <input type="range" min={0} max={100} step={1} value={min}
           onChange={handleMinChange}
-          onMouseDown={() => setThumbTop('min')}
-          onTouchStart={() => setThumbTop('min')}
-          style={{
-            ...sliderStyle,
-            pointerEvents: 'all',
-            zIndex: thumbTop === 'min' ? 5 : 4,
-          }}
+          onMouseDown={() => setThumbTop('min')} onTouchStart={() => setThumbTop('min')}
+          style={{ ...sliderStyle, zIndex: thumbTop === 'min' ? 5 : 4 }}
         />
-        {/* Max thumb */}
-        <input
-          type="range"
-          min={0}
-          max={100}
-          step={1}
-          value={max}
+        <input type="range" min={0} max={100} step={1} value={max}
           onChange={handleMaxChange}
-          onMouseDown={() => setThumbTop('max')}
-          onTouchStart={() => setThumbTop('max')}
-          style={{
-            ...sliderStyle,
-            pointerEvents: 'all',
-            zIndex: thumbTop === 'max' ? 5 : 4,
-          }}
+          onMouseDown={() => setThumbTop('max')} onTouchStart={() => setThumbTop('max')}
+          style={{ ...sliderStyle, zIndex: thumbTop === 'max' ? 5 : 4 }}
         />
       </div>
 
-      {/* Min / Max labels */}
-      <div style={{
-        display: 'flex',
-        justifyContent: 'space-between',
-        fontSize: '10px',
-        color: '#95a5a6',
-        marginBottom: '10px',
-      }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '10px', color: 'var(--text-muted)', marginBottom: '10px' }}>
         <span>0</span>
         <span>100</span>
       </div>
 
-      {/* Reset button - only visible when filtered */}
       {isFiltered && (
         <button
           onClick={handleReset}
           style={{
             width: '100%',
-            padding: '6px',
+            padding: '7px',
             backgroundColor: 'transparent',
-            color: '#e67e22',
-            border: '1px solid #e67e22',
-            borderRadius: '4px',
+            color: 'var(--accent-warning)',
+            border: '1px solid var(--accent-warning)',
+            borderRadius: 'var(--radius-sm)',
             fontSize: '12px',
             cursor: 'pointer',
-            transition: 'all 0.2s',
-          }}
-          onMouseOver={(e) => {
-            e.currentTarget.style.backgroundColor = '#fdf2e9';
-          }}
-          onMouseOut={(e) => {
-            e.currentTarget.style.backgroundColor = 'transparent';
+            transition: 'var(--transition)',
           }}
         >
           フィルターをリセット
@@ -169,22 +104,26 @@ const WIScoreFilter = ({ min, max, onChange }) => {
         input[type='range']::-webkit-slider-thumb {
           -webkit-appearance: none;
           appearance: none;
-          width: 16px;
-          height: 16px;
+          width: 18px;
+          height: 18px;
           border-radius: 50%;
-          background: #3498db;
-          border: 2px solid white;
-          box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+          background: var(--accent, #007AFF);
+          border: 2.5px solid white;
+          box-shadow: 0 2px 8px rgba(0,0,0,0.20);
           cursor: pointer;
           pointer-events: all;
+          transition: transform 0.15s;
+        }
+        input[type='range']::-webkit-slider-thumb:hover {
+          transform: scale(1.15);
         }
         input[type='range']::-moz-range-thumb {
-          width: 16px;
-          height: 16px;
+          width: 18px;
+          height: 18px;
           border-radius: 50%;
-          background: #3498db;
-          border: 2px solid white;
-          box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+          background: var(--accent, #007AFF);
+          border: 2.5px solid white;
+          box-shadow: 0 2px 8px rgba(0,0,0,0.20);
           cursor: pointer;
           pointer-events: all;
         }

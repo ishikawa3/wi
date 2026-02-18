@@ -180,7 +180,7 @@ const MapView = ({
       {/* WI Grid layer */}
       {wiData && wiData.features && (
         <GeoJSON
-          key={JSON.stringify(wiData.metadata || {})}
+          key={`${JSON.stringify(wiData.metadata || {})}-${wiData.features.length}`}
           data={wiData}
           style={styleFeature}
           onEachFeature={onEachFeature}
